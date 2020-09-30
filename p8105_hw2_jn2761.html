@@ -467,8 +467,12 @@ nrow(subset(NYC_Transit_distinct, train==&quot;A&quot;))</code></pre>
 <pre><code>## [1] 60</code></pre>
 <pre class="r"><code>nrow(subset(NYC_Transit_distinct, train==&quot;A&quot;&amp; ada==&quot;TRUE&quot;))</code></pre>
 <pre><code>## [1] 17</code></pre>
+<p><strong>Answer</strong>: There are 465 distinct stations. and 84 stations are ADA compliant. 0.01935484 of the station/ exits without vending allow entrance.There are 60 distinct stations serve the A train? Of the stations that serve the A train, and 17 of them are ADA compliant?</p>
+</div>
+<div id="problem-3" class="section level2">
+<h2>Problem 3</h2>
 <p>This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.</p>
-<p>First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.</p>
+<p>First, clean the data in pols-month.csv. separate() is used to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.</p>
 <pre class="r"><code>pols_month = 
   read.csv(
     &quot;./data/pols-month.csv&quot;
@@ -478,7 +482,9 @@ nrow(subset(NYC_Transit_distinct, train==&quot;A&quot;))</code></pre>
   mutate(
     year = as.integer(year),
     month = as.integer(month),
-    month = month.abb[month])
+    month = month.abb[month],
+gop = gov_gop + sen_gop +rep_gop,
+dem = gov_dem + sen_dem +rep_dem)
 
 pols_month_data = 
   pivot_longer(
@@ -512,9 +518,27 @@ unemployment_data =
     values_to = &quot;unemployment_rate&quot;)%&gt;%  janitor::clean_names()</code></pre>
 <p>Join the datasets by merging snp into pols, and merging unemployment into the result.</p>
 <pre class="r"><code>pols &lt;- merge(pols_month_data, snp, by.x = c('year', 'month'), by.y = c('year', 'month'))
-pols &lt;- merge(pols_month_data, unemployment_data, by.x = c('year', 'month'), by.y = c('year', 'month'))</code></pre>
-<p>Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).</p>
-<p>Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.</p>
+pols &lt;- merge(pols, unemployment_data, by.x = c('year', 'month'), by.y = c('year', 'month'))
+
+summary(pols)</code></pre>
+<pre><code>##       year         month                gop             dem       
+##  Min.   :1950   Length:4722        Min.   :190.0   Min.   :250.0  
+##  1st Qu.:1966   Class :character   1st Qu.:239.0   1st Qu.:282.0  
+##  Median :1982   Mode  :character   Median :253.0   Median :338.0  
+##  Mean   :1982                      Mean   :261.8   Mean   :327.6  
+##  3rd Qu.:1999                      3rd Qu.:301.0   3rd Qu.:353.0  
+##  Max.   :2015                      Max.   :330.0   Max.   :404.0  
+##   president              pols            close         unemployment_rate
+##  Length:4722        Min.   : 12.00   Min.   :  17.05   Min.   : 2.600   
+##  Class :character   1st Qu.: 30.00   1st Qu.:  83.60   1st Qu.: 4.800   
+##  Mode  :character   Median : 50.00   Median : 138.53   Median : 5.700   
+##                     Mean   : 98.23   Mean   : 474.89   Mean   : 5.871   
+##                     3rd Qu.:188.00   3rd Qu.: 947.28   3rd Qu.: 6.700   
+##                     Max.   :301.00   Max.   :2107.39   Max.   :10.400</code></pre>
+<p>The dataset <em>pols_month</em> contains in total of 822 observations and 9 variable, it recorded the number of democratic and republican at a given time.</p>
+<p>The dataset <em>snp</em> contains in total of 787 observations and 2 variable, it represent measure of stock market(closing values of the S&amp;P stock index) at a given time.</p>
+<p>the dataset <em>unemployment</em> contains 68 obersvation and 13 variable, it recorded the percentage of unemployment rate at a given time.</p>
+<p>IN the resulting dataset, I have 4722 observation and 8 variables, years range from 1950 to 2015, some of the key variables are number of republican(gop), number of democrate (dem), stock market measure (close), and umemployment_rate.</p>
 </div>
 
 

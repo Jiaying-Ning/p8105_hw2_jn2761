@@ -78,7 +78,6 @@ NYC_Transitdf =
     route11 = as.character(route11)
     )
 
-
 ```
 
 
@@ -118,9 +117,16 @@ nrow(subset(NYC_Transit_distinct, train=="A"& ada=="TRUE"))
 
 ```
 
+**Answer**: There are `r nrow(distinct(NYC_Transit_distinct,station_name_unique))` distinct stations. and `r nrow(subset(NYC_Transit_distinct, ada=="TRUE"))`  stations are ADA compliant. 0.01935484 of the station/ exits without vending allow entrance.There are `r nrow(subset(NYC_Transit_distinct, train=="A"))`
+ distinct stations serve the A train? Of the stations that serve the A train, and `r nrow(subset(NYC_Transit_distinct, train=="A"& ada=="TRUE"))` of them are ADA compliant?
+
+
+
+## Problem 3
+
 This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.
 
-First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+First, clean the data in pols-month.csv. separate() is used to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
 
 ```{r}
 pols_month = 
@@ -132,7 +138,9 @@ pols_month =
   mutate(
     year = as.integer(year),
     month = as.integer(month),
-    month = month.abb[month])
+    month = month.abb[month],
+gop = gov_gop + sen_gop +rep_gop,
+dem = gov_dem + sen_dem +rep_dem)
 
 pols_month_data = 
   pivot_longer(
@@ -187,13 +195,25 @@ Join the datasets by merging snp into pols, and merging unemployment into the re
 
 ```{r}
 pols <- merge(pols_month_data, snp, by.x = c('year', 'month'), by.y = c('year', 'month'))
-pols <- merge(pols_month_data, unemployment_data, by.x = c('year', 'month'), by.y = c('year', 'month'))
+pols <- merge(pols, unemployment_data, by.x = c('year', 'month'), by.y = c('year', 'month'))
+
+summary(pols)
 
 ```
 
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
-Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.
+
+The dataset *pols_month*  contains in total of 822 observations and 9 variable, it recorded the number of democratic and republican at a given time.
+
+The dataset *snp*  contains in total of 787 observations and 2 variable, it represent measure of stock market(closing values of the S&P stock index) at a given time.
+
+the dataset *unemployment* contains 68 obersvation and 13 variable, it recorded the percentage of unemployment rate at a given time.
+
+IN the resulting dataset, I have 4722 observation and 8 variables, years range from 1950 to 2015, some of the key variables are number of republican(gop), number of democrate (dem), stock market measure (close), and umemployment_rate.
+
+
+
+
 
 
